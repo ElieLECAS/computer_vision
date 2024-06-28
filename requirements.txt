@@ -1,3 +1,4 @@
 ultralytics
 gradio 
-opencv-python
+opencv-python-headless
+pillow
