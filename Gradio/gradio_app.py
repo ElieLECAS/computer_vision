@@ -7,6 +7,9 @@ from PIL import Image
 # Charger le modèle YOLOv8 fine-tuné
 model = YOLO('yolov8_fall_detection.pt')
 
+# Ajouter un attribut pour les noms des classes
+model.class_names = ['Fall-Detected']
+
 # Fonction de prédiction
 def predict():
     cap = cv2.VideoCapture(0)  # 0 pour utiliser la webcam par défaut
@@ -26,11 +29,11 @@ def predict():
                 class_id = int(box.cls[0])
                 confidence = box.conf[0]
 
-                # Vérifiez que la classe existe dans les noms
-                if class_id in result.names:
-                    label = result.names[class_id]
+                # Utiliser l'attribut class_names pour obtenir le label
+                if class_id < len(model.class_names):
+                    label = model.class_names[class_id]
 
-                    if label.lower() == 'fall':  # Assurez-vous que le label pour la chute est 'fall'
+                    if label.lower() == 'fall-detected':  # Assurez-vous que le label pour la chute est correct
                         color = (0, 0, 255)  # Rouge pour les chutes
                         text = f"Fall detected: {confidence:.2f}"
                         status = "Fall detected"
