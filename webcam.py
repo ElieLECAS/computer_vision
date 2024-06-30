@@ -1,14 +1,14 @@
-# from ultralytics import YOLO
+from ultralytics import YOLO
 
-# model = YOLO('yolov8n.pt')
+model = YOLO('yolov8_fall_detection.pt')
 
-# source = 'full-length-profile-shot-of-an-elderly-man-holding-his-painful-back-and-gesturing-with-hand-isolated-on-white-background-2PGM9R6.jpg'
+source = 0
 
-# results = model(source, show=True, conf=0.5, save=True)
+results = model(source, show=True, conf=0.5, save=True)
 
 
-from roboflow import Roboflow
-rf = Roboflow(api_key="SX9eIjqIeQ6q27TDMHcc")
-project = rf.workspace("roboflow-universe-projects").project("fall-detection-ca3o8")
-version = project.version(4)
-dataset = version.download("yolov8")
+# from roboflow import Roboflow
+# rf = Roboflow(api_key="SX9eIjqIeQ6q27TDMHcc")
+# project = rf.workspace("roboflow-universe-projects").project("fall-detection-ca3o8")
+# version = project.version(4)
+# dataset = version.download("yolov8")
