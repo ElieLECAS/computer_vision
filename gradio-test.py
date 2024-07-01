@@ -3,7 +3,7 @@ import PIL.Image as Image
 
 from ultralytics import ASSETS, YOLO
 
-model = YOLO("yolov8s.pt")
+model = YOLO("yolov8_fall_detection.pt")
 
 
 def predict_image(img, conf_threshold, iou_threshold):
