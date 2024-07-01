@@ -5,13 +5,13 @@ import numpy as np
 from PIL import Image
 
 # Charger le modèle YOLOv8 fine-tuné
-model = YOLO('yolov8_fall_detection.pt')
+model = YOLO('yolov8_fall_detection2.pt')
 
 # Ajouter un attribut pour les noms des classes
-model.class_names = ['Fall-Detected']
+model.class_names = ['Fall-Detected', 'Person']  # Assurez-vous que les classes sont correctement nommées
 
 # Fonction de prédiction
-def predict(frame, conf_threshold=0.5):  # Seuil de confiance par défaut à 50%
+def predict(frame, conf_threshold=0.6):  # Seuil de confiance par défaut à 60%
     frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     results = model(frame_rgb)
 
@@ -25,22 +25,21 @@ def predict(frame, conf_threshold=0.5):  # Seuil de confiance par défaut à 50%
             if confidence < conf_threshold:  # Appliquer le seuil de confiance
                 continue
 
-            if class_id < len(model.class_names):
+            if class_id < len(model.class_names):  # Vérifier si class_id est valide
+                color = (255, 255, 255)  # Blanc par défaut pour tous les objets
                 label = model.class_names[class_id]
+                text = f"{label}: {confidence:.2f}"
 
                 if label.lower() == 'fall-detected':  # Assurez-vous que le label pour la chute est correct
                     color = (0, 0, 255)  # Rouge pour les chutes
                     text = f"Fall detected: {confidence:.2f}"
                     status = "Fall detected"
-                    # Dessiner le rectangle autour de l'objet détecté
-                    cv2.rectangle(frame, (x1, y1), (x2, y2), color, 2)
-                    cv2.putText(frame, text, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, color, 2)
-                else:
-                    color = (0, 255, 0)  # Vert pour d'autres objets
-                    text = f"{label}: {confidence:.2f}"
-                    # Dessiner le rectangle autour de l'objet détecté
-                    cv2.rectangle(frame, (x1, y1), (x2, y2), color, 2)
-                    cv2.putText(frame, text, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, color, 2)
+                elif label.lower() == 'person':
+                    color = (0, 255, 0)  # Vert pour les personnes
+
+                # Dessiner le rectangle autour de l'objet détecté
+                cv2.rectangle(frame, (x1, y1), (x2, y2), color, 2)
+                cv2.putText(frame, text, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, color, 2)
 
     frame_pil = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
     return frame_pil, status

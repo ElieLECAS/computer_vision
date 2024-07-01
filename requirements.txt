@@ -2,3 +2,4 @@ ultralytics
 gradio 
 opencv-python-headless
 pillow
+python-dotenv
