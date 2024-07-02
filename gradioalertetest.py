@@ -25,7 +25,7 @@ def stop_alert_sound():
 
 def detect_fall(frame):
     global fall_detected_time, fall_alert_triggered
-    conf_threshold = 0.70  # Seuil de confiance pour la détection des chutes
+    conf_threshold = 0.65  # Seuil de confiance pour la détection des chutes
 
     # Convertir l'image de BGR à RGB pour le modèle YOLO
     frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
