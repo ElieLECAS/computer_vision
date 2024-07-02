@@ -3,3 +3,6 @@ gradio
 opencv-python-headless
 pillow
 python-dotenv
+pyttsx3
+gtts 
+playsound

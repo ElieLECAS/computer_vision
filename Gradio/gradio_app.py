@@ -19,7 +19,7 @@ def detect_fall(frame):
     # Filtrer uniquement les détections avec une confiance suffisante
     for result in results:
         for box in result.boxes:
-            if 0.7 < box.conf.item() >= conf_threshold:
+            if 1 < box.conf.item() >= conf_threshold:
                 x1, y1, x2, y2 = map(int, box.xyxy[0])
                 conf = box.conf.item()  # Convertir le tensor en une valeur numérique
                 label = f'Fall Detected: {conf:.2f}'
@@ -35,7 +35,7 @@ def detect_fall(frame):
 
 # Fonction pour capturer le flux vidéo et appliquer la détection
 def video_stream():
-    cap = cv2.VideoCapture(0)  # 0 pour la webcam intégrée, changez le numéro pour une autre caméra
+    cap = cv2.VideoCapture(2)  # 0 pour la webcam intégrée, changez le numéro pour une autre caméra
     while True:
         ret, frame = cap.read()
         if not ret:
