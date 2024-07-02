@@ -14,6 +14,7 @@
 .Trash-*
 
 *.pt
+*.torchscript
 runs/
 flagged/
 dataset/

@@ -3,10 +3,10 @@ import gradio as gr
 from ultralytics import YOLO
 
 # Charger le modèle YOLOv8 réentraîné pour la détection des chutes
-fall_detection_model = YOLO('yolov8_fall_detection2.pt')
+fall_detection_model = YOLO('best.torchscript')
 
 def detect_fall(frame):
-    conf_threshold = 0.5  # Seuil de confiance pour la détection des chutes
+    conf_threshold = 0.65  # Seuil de confiance pour la détection des chutes
 
     # Convertir l'image de BGR à RGB
     frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -19,8 +19,7 @@ def detect_fall(frame):
     # Filtrer uniquement les détections avec une confiance suffisante
     for result in results:
         for box in result.boxes:
-            # Vérifiez si la classe détectée est une chute (assumons que la classe 'fall' est codée par 1)
-            if box.cls.item() == 1 and box.conf.item() > conf_threshold:
+            if 0.7 < box.conf.item() >= conf_threshold:
                 x1, y1, x2, y2 = map(int, box.xyxy[0])
                 conf = box.conf.item()  # Convertir le tensor en une valeur numérique
                 label = f'Fall Detected: {conf:.2f}'
@@ -31,11 +30,8 @@ def detect_fall(frame):
     # Ajouter un texte pour indiquer si une chute est détectée
     status_text = "Fall Detected!" if fall_detected else "No Fall Detected"
 
-    # Convertir l'image annotée de RGB à BGR pour OpenCV
-    frame_bgr = cv2.cvtColor(frame_rgb, cv2.COLOR_RGB2BGR)
-
-    # Retourner le cadre annoté et le texte de statut
-    return frame_bgr, status_text
+# Retourner le cadre annoté et le texte de statut
+    return frame_rgb, status_text
 
 # Fonction pour capturer le flux vidéo et appliquer la détection
 def video_stream():

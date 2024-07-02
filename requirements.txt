@@ -1,3 +1,5 @@
 gradio
 ultralytics
 roboflow
+opencv-python-headless
+pillow

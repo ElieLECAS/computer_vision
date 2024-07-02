@@ -1,6 +1,6 @@
 from ultralytics import YOLO
 
-model = YOLO('yolov8_fall_detection.pt')
+model = YOLO('yolov8_fall_detection2.pt')
 
 source = 0
 
