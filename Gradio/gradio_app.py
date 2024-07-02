@@ -9,8 +9,8 @@ person_model = YOLO('Gradio/yolov8n.pt')
 fall_detection_model = YOLO('Gradio/yolov8_fall_detection2.pt')
 
 def detect_fall(frame):
-    person_conf_threshold = 0.5  # Seuil de confiance pour la détection des personnes
-    fall_conf_threshold = 0.5  # Seuil de confiance pour la détection des chutes
+    person_conf_threshold = 0.4  # Seuil de confiance pour la détection des personnes
+    fall_conf_threshold = 0.7  # Seuil de confiance pour la détection des chutes
 
     # Convertir l'image de BGR à RGB
     frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
