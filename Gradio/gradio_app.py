@@ -2,56 +2,46 @@ import cv2
 import gradio as gr
 from ultralytics import YOLO
 
-# Charger le modèle YOLOv8 pré-entraîné pour la détection des personnes
-person_model = YOLO('Gradio/yolov8n.pt')
-
 # Charger le modèle réentraîné pour la détection des chutes
-fall_detection_model = YOLO('Gradio/yolov8_fall_detection2.pt')
+fall_detection_model = YOLO('Gradio/best.torchscript')
+
+# Imprimer les classes avec leurs index
+class_names = fall_detection_model.names
+for index, class_name in class_names.items():
+    print(f"Index: {index}, Class: {class_name}")
 
 def detect_fall(frame):
-    person_conf_threshold = 0.4  # Seuil de confiance pour la détection des personnes
     fall_conf_threshold = 0.7  # Seuil de confiance pour la détection des chutes
 
-    # Convertir l'image de BGR à RGB
+    # Convertir l'image de BGR à RGB pour la détection
     frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-    # Convertir l'image en format compatible avec YOLO
-    results_person = person_model(frame_rgb)
-    
+    # Appliquer le modèle de détection de chutes sur l'image entière
+    results_fall = fall_detection_model(frame_rgb)
+
     fall_detected = False
 
-    # Filtrer uniquement les détections de personnes avec une confiance suffisante
-    for result in results_person:
-        for box in result.boxes:
-            if box.cls == 0 and box.conf.item() >= person_conf_threshold:  # 0 est l'index de la classe "personne" dans le modèle YOLOv8
-                x1, y1, x2, y2 = map(int, box.xyxy[0])
-                conf = box.conf.item()  # Convertir le tensor en une valeur numérique
-                label = f'Person: {conf:.2f}'
-                frame_rgb = cv2.rectangle(frame_rgb, (x1, y1), (x2, y2), (0, 255, 0), 2)
-                frame_rgb = cv2.putText(frame_rgb, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (36, 255, 12), 2)
-
-                # Extraire la région de la personne détectée
-                person_roi = frame[y1:y2, x1:x2]
-
-                # Appliquer le modèle de détection de chutes sur la région de la personne
-                results_fall = fall_detection_model(person_roi)
-                for fall_box in results_fall:
-                    for fall_box in fall_box.boxes:
-                        if fall_box.conf.item() >= fall_conf_threshold:  # Seulement si la confiance est élevée
-                            fall_detected = True
-                            frame_rgb = cv2.rectangle(frame_rgb, (x1, y1), (x2, y2), (0, 0, 255), 2)
-                            frame_rgb = cv2.putText(frame_rgb, f'Fall Detected: {fall_box.conf.item():.2f}', (x1, y1 - 30), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
+    for result in results_fall:
+        for fall_box in result.boxes:
+            if fall_box.conf.item() >= fall_conf_threshold:  # Seulement si la confiance est élevée
+                fall_detected = True
+                x1, y1, x2, y2 = map(int, fall_box.xyxy[0])
+                frame_rgb = cv2.rectangle(frame_rgb, (x1, y1), (x2, y2), (0, 0, 255), 2)
+                frame_rgb = cv2.putText(frame_rgb, f'Fall Detected: {fall_box.conf.item():.2f}', (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
 
     # Ajouter un texte pour indiquer si une chute est détectée
     status_text = "Fall Detected!" if fall_detected else "No Fall Detected"
-    
+
+    # Convertir l'image de RGB à BGR pour l'affichage dans Gradio
+    frame_bgr = cv2.cvtColor(frame_rgb, cv2.COLOR_RGB2BGR)
+
     # Retourner le cadre annoté et le texte de statut
-    return frame_rgb, status_text
+    return frame_bgr, status_text
 
 # Fonction pour capturer le flux vidéo et appliquer la détection
 def video_stream():
     cap = cv2.VideoCapture(0)  # 0 pour la webcam intégrée, changez le numéro pour une autre caméra
-    while True:
+    while cap.isOpened():
         ret, frame = cap.read()
         if not ret:
             break

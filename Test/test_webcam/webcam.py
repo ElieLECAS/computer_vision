@@ -4,7 +4,7 @@ from ultralytics import YOLO
 # Define paths relative to the root directory of the project
 root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 
-model_path = os.path.join(root_dir, 'test_model', 'yolov8s.pt')
+model_path = os.path.join(root_dir, 'test_model', 'fall_detection_flo.pt')
 save_path = os.path.join(root_dir, 'test_runs', 'runs', 'detect', 'predict')
 
 # Ensure the save path exists
