@@ -4,3 +4,4 @@ roboflow
 opencv-python-headless
 pillow
 playsound
+pygame
